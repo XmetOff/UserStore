@@ -1,0 +1,77 @@
+﻿@model IEnumerable<WebApplication2.Models.User>
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<h2>Index</h2>
+
+<script>
+    function search(event) {
+        $("#queryExcel").val($("#query").val());
+        if (event != null) {
+            event.preventDefault();
+            var page = event.target.id;
+        }
+        else {
+            page = 1;
+        }
+        var data = JSON.stringify({
+            'query': $("#query").val(),
+            'page': page
+        });
+        $.ajax({
+            type: "POST",
+            url: "/User/SearchResult/",
+            data: data,
+            datatype: "html",
+            contentType: 'application/json',
+            success: function (data) {
+                $('#results').html(data);
+            }
+        });
+    };
+
+    $(function () {
+        $("#query").keyup(function () {
+            search(null);
+        });
+    });
+
+    $(document).ready(function () {
+        try {
+            $("input[type='text']").each(function () {
+                $(this).attr("autocomplete", "off");
+            });
+        }
+        catch (e)
+        { }
+
+        search(null);
+    });
+
+
+
+</script>
+
+@Html.TextBox("query")
+
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<div id="results"></div>
+
+
+<br />
+
+@using (Html.BeginForm("ExportExcel", "User", FormMethod.Post))
+{
+    @Html.Hidden("queryExcel")
+
+    <p><input type="submit" value="Экспорт" /></p>
+}
+
+
+
